@@ -1,0 +1,146 @@
+#!/bin/sh
+# 飞牛 fnOS 应用控制脚本
+# 调用约定：main {start|stop|status|install|uninstall|upgrade|restart}
+
+CMD="$1"
+HERE=$(cd "$(dirname "$0")" && pwd)
+PKG_ROOT=$(dirname "$HERE")
+APPNAME="douyin-dl"
+PORT="${DOUYIN_PORT:-8080}"
+
+# 程序目录：兼容不同解包布局
+APP_DIR=""
+for d in "$PKG_ROOT/target/app" "$PKG_ROOT/app" "/var/apps/$APPNAME/target/app" "/var/apps/$APPNAME/app"; do
+    if [ -d "$d/core" ]; then
+        APP_DIR="$d"
+        break
+    fi
+done
+
+# 数据目录：优先用系统给的可写目录
+DATA_DIR="${TRIM_PKGVAR:-/var/apps/$APPNAME/var}"
+VENV="$DATA_DIR/venv"
+PIDFILE="$DATA_DIR/app.pid"
+LOGFILE="$DATA_DIR/app.log"
+PIP_MIRROR="${PIP_MIRROR:-https://mirrors.aliyun.com/pypi/simple/}"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+}
+
+ensure_dirs() {
+    mkdir -p "$DATA_DIR" "$DATA_DIR/downloads"
+}
+
+ensure_venv() {
+    if [ -x "$VENV/bin/python" ]; then
+        return 0
+    fi
+    log "初始化 Python 运行环境（首次启动需要几分钟）"
+    PY=$(command -v python3 || command -v python)
+    if [ -z "$PY" ]; then
+        log "系统缺少 python3，请先在飞牛上安装 Python3.10+"
+        return 1
+    fi
+    "$PY" -m venv "$VENV" || return 1
+    "$VENV/bin/python" -m pip install --upgrade pip -i "$PIP_MIRROR" >>"$LOGFILE" 2>&1
+    "$VENV/bin/python" -m pip install -r "$APP_DIR/requirements.txt" -i "$PIP_MIRROR" >>"$LOGFILE" 2>&1
+    if [ ! -x "$VENV/bin/uvicorn" ]; then
+        log "依赖安装失败，详见 $LOGFILE"
+        return 1
+    fi
+    log "运行环境就绪"
+}
+
+is_running() {
+    [ -f "$PIDFILE" ] || return 1
+    PID=$(cat "$PIDFILE" 2>/dev/null)
+    [ -n "$PID" ] || return 1
+    kill -0 "$PID" 2>/dev/null
+}
+
+do_start() {
+    if is_running; then
+        log "已在运行 (pid $(cat "$PIDFILE"))"
+        return 0
+    fi
+    [ -n "$APP_DIR" ] || { log "找不到程序目录"; return 1; }
+    ensure_dirs
+    ensure_venv || return 1
+    cd "$APP_DIR" || return 1
+    DOUYIN_DATA_DIR="$DATA_DIR" \
+    DOUYIN_DOWNLOAD_ROOT="${DOUYIN_DOWNLOAD_ROOT:-$DATA_DIR/downloads}" \
+    TZ=Asia/Shanghai \
+    nohup "$VENV/bin/python" -m uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --workers 1 \
+        >>"$LOGFILE" 2>&1 &
+    echo $! >"$PIDFILE"
+    sleep 2
+    if is_running; then
+        log "已启动，访问 http://<NAS地址>:$PORT"
+        return 0
+    fi
+    log "启动失败，查看 $LOGFILE"
+    return 1
+}
+
+do_stop() {
+    if ! is_running; then
+        log "未在运行"
+        rm -f "$PIDFILE"
+        return 0
+    fi
+    PID=$(cat "$PIDFILE")
+    kill "$PID" 2>/dev/null
+    i=0
+    while [ $i -lt 15 ] && kill -0 "$PID" 2>/dev/null; do
+        sleep 1
+        i=$((i + 1))
+    done
+    kill -9 "$PID" 2>/dev/null
+    rm -f "$PIDFILE"
+    log "已停止"
+    return 0
+}
+
+do_status() {
+    if is_running; then
+        echo "running (pid $(cat "$PIDFILE"))"
+        return 0
+    fi
+    echo "stopped"
+    return 3
+}
+
+case "$CMD" in
+    install)
+        ensure_dirs
+        ensure_venv || true
+        log "安装完成"
+        ;;
+    uninstall)
+        do_stop
+        log "已卸载（$DATA_DIR 下的下载文件保留）"
+        ;;
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart)
+        do_stop
+        do_start
+        ;;
+    status)
+        do_status
+        ;;
+    upgrade)
+        do_stop
+        ensure_venv || true
+        do_start
+        ;;
+    *)
+        echo "用法: $0 {start|stop|restart|status|install|uninstall|upgrade}"
+        exit 1
+        ;;
+esac

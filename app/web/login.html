@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d12">
+<title>登录 · DyVault</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fe2c55'/%3E%3Cpath d='M25 19v26l19-13z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --brand: #fe2c55;
+    --ink: #0b0d12;
+    --line: #e9ebf0;
+    --text: #14161c;
+    --text-2: #5a616e;
+    --text-3: #8b93a1;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: radial-gradient(circle at 12% 12%, rgba(254, 44, 85, .20), transparent 42%),
+                radial-gradient(circle at 88% 84%, rgba(47, 111, 237, .16), transparent 46%),
+                #0b0d12;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .bg-grid {
+    position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 78%);
+    pointer-events: none;
+  }
+  .wrap { position: relative; width: 100%; max-width: 392px; }
+  .brand {
+    display: flex; align-items: center; gap: 11px;
+    margin-bottom: 20px; color: #fff;
+  }
+  .mark {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(140deg, #fe2c55, #ff6b81);
+    display: grid; place-items: center;
+    box-shadow: 0 12px 28px -12px rgba(254, 44, 85, .95);
+  }
+  .mark svg { width: 20px; height: 20px; fill: #fff; }
+  .brand h1 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: .2px; }
+  .brand p { margin: 1px 0 0; font-size: 11.5px; color: #7c8496; letter-spacing: .4px; text-transform: uppercase; }
+
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 26px 24px 22px;
+    box-shadow: 0 32px 80px -40px rgba(0, 0, 0, .9), 0 1px 0 rgba(255, 255, 255, .6) inset;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 18px; font-weight: 600; letter-spacing: -.2px; }
+  .card .sub { margin: 0 0 20px; font-size: 12.5px; color: var(--text-3); line-height: 1.6; }
+
+  label { display: block; font-size: 12.5px; color: var(--text-2); font-weight: 500; margin-bottom: 6px; }
+  .field { margin-bottom: 14px; }
+  input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #dcdfe7;
+    border-radius: 11px;
+    background: #fbfcfe;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  input:focus { border-color: #f7a0b1; background: #fff; box-shadow: 0 0 0 3.5px rgba(254, 44, 85, .12); }
+  input::placeholder { color: #aab1bd; }
+
+  .btn {
+    width: 100%; height: 45px; margin-top: 6px;
+    border: none; border-radius: 11px;
+    background: linear-gradient(135deg, #fe2c55, #ef1f49);
+    color: #fff; font-size: 14px; font-weight: 500;
+    font-family: inherit; cursor: pointer;
+    box-shadow: 0 14px 26px -14px rgba(254, 44, 85, 1);
+    transition: filter .15s, transform .06s;
+  }
+  .btn:hover { filter: brightness(1.05); }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .msg { margin-top: 12px; font-size: 12px; line-height: 1.6; min-height: 18px; color: var(--text-3); }
+  .msg.bad { color: #d81b45; }
+  .msg.ok { color: #0b8a52; }
+
+  .foot { margin-top: 16px; text-align: center; font-size: 11px; color: #5c6474; }
+  .switch { margin-top: 14px; text-align: center; font-size: 12px; color: var(--text-3); }
+  .switch a { color: #d81b45; text-decoration: none; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="wrap">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 24 24"><path d="M7.5 4.6v14.8L20 12z"/></svg></div>
+    <div>
+      <h1>DyVault</h1>
+      <p>Douyin Downloader</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="loginBox" class="hidden">
+      <h2>访问验证</h2>
+      <p class="sub">这台服务器上的下载控制台需要密码才能进入。</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="password">访问密码</label>
+          <input id="password" type="password" autocomplete="current-password" placeholder="请输入访问密码" autofocus>
+        </div>
+        <button class="btn" type="submit" id="loginBtn">进入控制台</button>
+      </form>
+    </div>
+
+    <div id="setupBox" class="hidden">
+      <h2>设置访问密码</h2>
+      <p class="sub">首次使用需要设置一个密码，之后每次访问都要验证，避免被他人随意使用。</p>
+      <form id="setupForm">
+        <div class="field">
+          <label for="newPass">新密码（至少 6 位）</label>
+          <input id="newPass" type="password" autocomplete="new-password" placeholder="设置访问密码">
+        </div>
+        <div class="field">
+          <label for="confirmPass">确认密码</label>
+          <input id="confirmPass" type="password" autocomplete="new-password" placeholder="再输入一次">
+        </div>
+        <button class="btn" type="submit" id="setupBtn">保存并进入</button>
+      </form>
+    </div>
+
+    <div class="msg" id="msg"></div>
+  </div>
+  <div class="foot">登录状态保持 30 天 · 修改密码后自动失效</div>
+</div>
+
+<script>
+const msg = (text, kind = "") => {
+  const node = document.getElementById("msg");
+  node.textContent = text;
+  node.className = "msg " + kind;
+};
+
+async function post(url, body) {
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {}),
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.detail || `${resp.status} ${resp.statusText}`);
+  return data;
+}
+
+async function boot() {
+  try {
+    const state = await fetch("/api/auth/state").then((r) => r.json());
+    if (state.authed) { location.href = "/"; return; }
+    if (state.password_set) {
+      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("password").focus();
+    } else {
+      document.getElementById("setupBox").classList.remove("hidden");
+      document.getElementById("newPass").focus();
+    }
+  } catch (err) {
+    msg("无法连接服务：" + err.message, "bad");
+  }
+}
+
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true; btn.textContent = "验证中…";
+  try {
+    await post("/api/login", { password: document.getElementById("password").value });
+    msg("验证通过，正在进入…", "ok");
+    location.href = "/";
+  } catch (err) {
+    msg(err.message, "bad");
+    btn.disabled = false; btn.textContent = "进入控制台";
+  }
+});
+
+document.getElementById("setupForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const pass = document.getElementById("newPass").value;
+  const confirm = document.getElementById("confirmPass").value;
+  if (pass.length < 6) { msg("密码至少 6 位", "bad"); return; }
+  if (pass !== confirm) { msg("两次输入的密码不一致", "bad"); return; }
+  const btn = document.getElementById("setupBtn");
+  btn.disabled = true; btn.textContent = "保存中…";
+  try {
+    await post("/api/auth/setup", { password: pass });
+    msg("设置成功，正在进入…", "ok");
+    location.href = "/";
+  } catch (err) {
+    msg(err.message, "bad");
+    btn.disabled = false; btn.textContent = "保存并进入";
+  }
+});
+
+boot();
+</script>
+</body>
+</html>

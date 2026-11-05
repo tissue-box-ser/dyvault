@@ -1,0 +1,24 @@
+services:
+  dyvault:
+    build: .
+    image: dyvault:2.0.0
+    container_name: dyvault
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+      DOUYIN_DOWNLOAD_ROOT: /downloads
+      # 也可以在网页里配置，环境变量优先级更高
+      # DOUYIN_COOKIE: "ttwid=...; sessionid=..."
+      # DOUYIN_TOKEN: "换成你自己的访问口令"
+      # DOUYIN_INTERVAL: "1.5"
+    volumes:
+      - ./config:/config
+      # 飞牛 NAS 上改成实际存储路径，例如 /vol1/1000/downloads/douyin
+      - ./downloads:/downloads
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
