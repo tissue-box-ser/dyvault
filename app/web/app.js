@@ -646,6 +646,44 @@ async function previewTarget() {
   }, 350);
 }
 
+/* ------------------------------------------------------------ 读取浏览器 Cookie */
+
+function buildBookmarklet() {
+  const origin = location.origin;
+  return "javascript:(function(){var c=document.cookie||'';"
+    + "location.href='" + origin + "/cookie-import#'+encodeURIComponent(c);})()";
+}
+
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (err) { /* 落到 execCommand */ }
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function openBookmarklet() {
+  const code = buildBookmarklet();
+  el("bmCode").value = code;
+  el("bmLink").setAttribute("href", code);
+  el("bmMask").classList.add("show");
+}
+
+function closeBookmarklet() {
+  el("bmMask").classList.remove("show");
+}
+
 /* ------------------------------------------------------------ 事件绑定 */
 
 document.querySelectorAll(".nav-item").forEach((node) => {
@@ -825,12 +863,24 @@ el("btnUp").addEventListener("click", () => {
   loadFiles(parts.join("/"));
 });
 el("btnReloadFiles").addEventListener("click", () => loadFiles(filesPath));
+el("btnBrowserCookie").addEventListener("click", openBookmarklet);
+el("bmClose").addEventListener("click", closeBookmarklet);
+el("bmMask").addEventListener("click", (event) => { if (event.target === el("bmMask")) closeBookmarklet(); });
+el("bmLink").addEventListener("click", (event) => {
+  event.preventDefault();
+  toast("把按钮拖到书签栏，或点「复制代码」手动新建书签");
+});
+el("bmCopy").addEventListener("click", async () => {
+  const ok = await copyText(el("bmCode").value);
+  toast(ok ? "书签代码已复制" : "复制失败，请手动全选文本框内容", !ok);
+});
+
 el("dlClose").addEventListener("click", closeDownload);
 el("dlMask").addEventListener("click", (event) => { if (event.target === el("dlMask")) closeDownload(); });
 el("dlZip").addEventListener("click", downloadZip);
 el("dlOne").addEventListener("click", downloadOne);
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeDownload();
+  if (event.key === "Escape") { closeDownload(); closeBookmarklet(); }
 });
 
 /* ------------------------------------------------------------ 启动 */
@@ -838,6 +888,7 @@ document.addEventListener("keydown", (event) => {
 const initialHash = location.hash.replace("#", "");
 if (initialHash === "files") switchView("files");
 if (initialHash === "settings") switchView("settings");
+if (initialHash === "bookmarklet") { switchView("settings"); openBookmarklet(); }
 
 refresh();
 refreshSystem();

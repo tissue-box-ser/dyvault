@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d12">
+<title>导入浏览器 Cookie · DyVault</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fe2c55'/%3E%3Cpath d='M25 19v26l19-13z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css?v=2.1.3">
+</head>
+<body class="import-body">
+<div class="import-wrap">
+  <div class="import-brand">
+    <div class="brand-mark"><svg class="ico"><use href="#i-play"/></svg></div>
+    <div>
+      <strong>DyVault</strong>
+      <span>浏览器 Cookie 导入</span>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head"><h2 id="title">正在解析…</h2></div>
+    <div id="content"></div>
+  </section>
+
+  <p class="import-foot">Cookie 只通过地址栏锚点传回本机，不会出现在服务器日志里。</p>
+</div>
+
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+</defs></svg>
+
+<script>
+const el = (id) => document.getElementById(id);
+
+function human(fields) {
+  return fields.length ? fields.join("、") : "无";
+}
+
+function render() {
+  const raw = decodeURIComponent((location.hash || "").slice(1));
+  if (!raw || raw.indexOf("=") < 0) {
+    el("title").textContent = "没有读到 Cookie";
+    el("content").innerHTML = `
+      <p class="hint">这个页面需要从抖音页面的书签跳转过来。请回到控制台，点「读取浏览器 Cookie」重新操作。</p>
+      <div class="row"><a class="btn" href="/#settings">返回控制台</a></div>`;
+    return;
+  }
+
+  const fields = raw.split(";").map((part) => part.split("=")[0].trim()).filter(Boolean);
+  const hasLogin = ["sessionid", "sessionid_ss", "sid_tt"].some((k) => fields.includes(k));
+  const hasTtwid = fields.includes("ttwid");
+
+  el("title").textContent = hasLogin ? "已读取到登录态" : "已读取到 Cookie（缺少登录态字段）";
+
+  const warn = hasLogin ? "" : `
+    <div class="import-warn">
+      当前只读到 ${fields.length} 个字段，没有 <code>sessionid</code>。可能是抖音还没登录 / 登录已过期，
+      也可能浏览器把登录凭证存成了 HttpOnly（网页脚本读不到）。请确认已在 douyin.com 登录后再点一次书签；
+      仍不行就用 F12 → Network → 复制请求头里的整串 Cookie 手动粘贴。
+    </div>`;
+
+  el("content").innerHTML = `
+    <div class="import-stats">
+      <div class="dl-cell"><b>${fields.length}</b><span>字段</span></div>
+      <div class="dl-cell"><b>${hasLogin ? "有" : "无"}</b><span>登录态</span></div>
+      <div class="dl-cell"><b>${hasTtwid ? "有" : "无"}</b><span>ttwid</span></div>
+    </div>
+    <div class="path-box"><span>识别到的字段</span><code>${human(fields)}</code></div>
+    ${warn}
+    <label class="field-col" style="margin-top:14px">
+      <span>账号备注名</span>
+      <input id="label" type="text" value="浏览器导入">
+    </label>
+    <div class="row" style="margin-top:14px">
+      <button class="btn primary" id="save">保存到账号池</button>
+      <a class="btn ghost" href="/#settings">取消</a>
+      <span class="test-result" id="msg"></span>
+    </div>`;
+
+  el("save").addEventListener("click", async () => {
+    const msg = el("msg");
+    const btn = el("save");
+    btn.disabled = true;
+    msg.textContent = "保存中…";
+    msg.className = "test-result";
+    try {
+      const resp = await fetch("/api/cookies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: el("label").value.trim(), value: raw }),
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(data.detail || `${resp.status}`);
+      msg.textContent = "已保存，正在返回控制台…";
+      msg.className = "test-result ok";
+      history.replaceState(null, "", "/cookie-import");
+      setTimeout(() => { location.href = "/#settings"; }, 800);
+    } catch (err) {
+      btn.disabled = false;
+      msg.textContent = err.message + (err.message.includes("登录") ? "（请先登录控制台，再点一次书签）" : "");
+      msg.className = "test-result bad";
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
