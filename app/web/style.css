@@ -323,7 +323,8 @@ textarea { resize: vertical; line-height: 1.6; font-size: 12.5px; font-family: v
 .btn.ghost { background: #fff; }
 .btn.block { width: 100%; height: 42px; margin-top: 4px; }
 
-.preview { min-height: 20px; margin-top: 9px; font-size: 12.5px; color: var(--text-3); position: relative; z-index: 1; }
+.preview { min-height: 0; margin-top: 0; font-size: 12.5px; color: var(--text-3); position: relative; z-index: 1; }
+.preview:not(:empty) { min-height: 20px; margin-top: 9px; }
 .preview b { color: var(--text); font-weight: 600; }
 .preview .warn { color: var(--amber); }
 .preview .good { color: var(--green); }
@@ -356,7 +357,7 @@ textarea { resize: vertical; line-height: 1.6; font-size: 12.5px; font-family: v
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 0;
   position: relative;
   z-index: 1;
 }
@@ -364,7 +365,7 @@ textarea { resize: vertical; line-height: 1.6; font-size: 12.5px; font-family: v
 .field-row select { height: 38px; border-radius: 9px; font-size: 12.5px; }
 
 .target-hint {
-  margin-top: 8px;
+  margin-top: 7px;
   font-size: 11px;
   color: var(--text-3);
   font-family: var(--mono);
@@ -373,6 +374,7 @@ textarea { resize: vertical; line-height: 1.6; font-size: 12.5px; font-family: v
   z-index: 1;
   min-height: 16px;
 }
+.target-hint + .composer { margin-top: 14px; }
 
 .seg {
   display: inline-flex;
