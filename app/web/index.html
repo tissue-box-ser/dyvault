@@ -229,7 +229,12 @@
         <section class="panel">
           <div class="panel-head">
             <h2>Cookie 账号池</h2>
-            <span class="hint-inline" id="cookieCount">0 个账号</span>
+            <div class="head-actions">
+              <span class="hint-inline" id="cookieCount">0 个账号</span>
+              <button class="btn sm" id="btnBrowserCookie">
+                <svg class="ico"><use href="#i-key"/></svg>读取浏览器 Cookie
+              </button>
+            </div>
           </div>
           <p class="hint">添加多个抖音账号后，抓取时会按请求轮换使用（默认每 25 次请求换一个），单个账号触发风控时自动切到下一个。建议用小号。</p>
           <div id="cookieList" class="cookie-list"></div>
@@ -385,6 +390,36 @@
     <div class="modal-foot">
       <button class="btn ghost" id="dlOne">逐个下载</button>
       <button class="btn primary" id="dlZip"><svg class="ico"><use href="#i-zip"/></svg>打包下载 ZIP</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="bmMask">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>读取浏览器 Cookie</h2>
+        <p>用书签取一次，不装扩展、不弹权限警告</p>
+      </div>
+      <button class="icon-btn" id="bmClose" title="关闭"><svg class="ico"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <ol class="steps">
+        <li><b>把下面这颗按钮拖到书签栏</b>（拖不动就用下方的「复制代码」）<div class="bm-slot">
+          <a class="bm-link" id="bmLink" href="#" draggable="true">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5v11m0 0 4-4m-4 4-4-4M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>
+            读取抖音 Cookie
+          </a></div>
+        </li>
+        <li><b>打开并登录 douyin.com</b>（已登录就跳过）</li>
+        <li><b>点一下这颗书签</b>，会自动跳回这里并导入</li>
+      </ol>
+      <p class="tip" id="bmTip">书签只在 douyin.com 页面里读取本站 Cookie，读不到登录态时会提示改用 F12 复制。</p>
+      <textarea id="bmCode" rows="4" readonly spellcheck="false"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="bmCopy">复制代码</button>
+      <a class="btn primary" href="https://www.douyin.com/" target="_blank" rel="noreferrer">打开抖音</a>
     </div>
   </div>
 </div>

@@ -44,7 +44,14 @@ cookies = CookiePool(db, settings)
 auth = Auth(settings)
 runner = JobRunner(db, settings, cookies)
 
-PUBLIC_PATHS = {"/login", "/api/login", "/api/auth/state", "/api/auth/setup", "/favicon.ico"}
+PUBLIC_PATHS = {
+    "/login",
+    "/api/login",
+    "/api/auth/state",
+    "/api/auth/setup",
+    "/favicon.ico",
+    "/cookie-import",
+}
 
 CDN_HOSTS = (
     "douyin.com",
@@ -69,7 +76,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="DyVault · 抖音批量下载", version="2.1.0", lifespan=lifespan)
+app = FastAPI(title="DyVault · 抖音批量下载", version="2.1.3", lifespan=lifespan)
 
 
 @app.middleware("http")
@@ -209,7 +216,7 @@ def change_password(payload: PasswordPayload):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "version": "2.1.0", "running": runner.running_ids()}
+    return {"ok": True, "version": "2.1.3", "running": runner.running_ids()}
 
 
 @app.get("/api/state")
@@ -235,7 +242,7 @@ def state():
             "download_root": str(settings.download_root()),
             "roots": settings.roots(),
         },
-        "version": "2.1.0",
+        "version": "2.1.3",
     }
 
 
@@ -250,7 +257,7 @@ def system_info():
     disks = {"collection": disk, "per_aweme": settings.disk_info("per_aweme")}
     return {
         "ok": True,
-        "version": "2.1.0",
+        "version": "2.1.3",
         "hostname": platform.node(),
         "platform": f"{platform.system()} {platform.release()}",
         "python": platform.python_version(),
@@ -751,3 +758,9 @@ def index():
 @app.get("/login")
 def login_page():
     return FileResponse(WEB_DIR / "login.html")
+
+
+@app.get("/cookie-import")
+def cookie_import_page():
+    """书签跳回的落地页：Cookie 放在 URL 锚点里，页面自己解析并提交。"""
+    return FileResponse(WEB_DIR / "cookie_import.html")

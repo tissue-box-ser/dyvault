@@ -1018,3 +1018,69 @@ select {
   .modal-foot { flex-direction: column-reverse; }
   .modal-foot .btn { width: 100%; }
 }
+
+/* ------------------------------------------------------------ 读取浏览器 Cookie */
+
+.steps {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.85;
+}
+.steps li { margin-bottom: 8px; }
+.steps b { color: var(--text); font-weight: 600; }
+.bm-slot { margin-top: 9px; }
+.bm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  border: 1px dashed #f3a7b9;
+  color: var(--brand-ink);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: grab;
+  user-select: none;
+}
+.bm-link:hover { background: #ffe4ea; }
+.bm-link:active { cursor: grabbing; }
+#bmCode { margin-top: 8px; font-size: 11px; background: #f8f9fb; }
+
+/* 导入落地页 */
+.import-body {
+  display: block;
+  padding: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(254, 44, 85, .10), transparent 40%),
+    var(--bg);
+}
+.import-wrap {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 44px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.import-brand { display: flex; align-items: center; gap: 11px; }
+.import-brand .brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+.import-brand strong { display: block; font-size: 15px; }
+.import-brand span { font-size: 11px; color: var(--text-3); letter-spacing: .3px; text-transform: uppercase; }
+.import-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.import-warn {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff8ec;
+  border: 1px solid #fbe3bf;
+  color: #8a5a12;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.import-warn code { background: #fff; padding: 1px 5px; border-radius: 4px; }
+.import-foot { font-size: 11px; color: var(--text-3); text-align: center; }
