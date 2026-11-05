@@ -823,6 +823,27 @@ textarea { resize: vertical; line-height: 1.6; font-size: 12.5px; font-family: v
 
 /* ------------------------------------------------------------ 响应式 */
 
+/* ------------------------------------------------------------ 下载页：任务队列进右栏 */
+
+#viewDownload { grid-template-columns: minmax(0, 1fr) 400px; }
+#viewDownload .col.side { position: static; }
+#viewDownload .jobs {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+#viewDownload .jobs::-webkit-scrollbar { width: 7px; }
+#viewDownload .jobs::-webkit-scrollbar-thumb { background: #d8dde6; border-radius: 999px; }
+#viewDownload .empty { padding: 24px 8px 20px; }
+#viewDownload .empty-icon { width: 40px; height: 40px; margin-bottom: 10px; }
+#viewDownload .job-nums { gap: 8px 12px; }
+#viewDownload .job-foot { flex-direction: column; align-items: stretch; gap: 8px; }
+#viewDownload .job-actions { justify-content: flex-end; }
+#viewDownload .log-panel { margin-top: 0; }
+#viewDownload .logs { min-height: 180px; max-height: 260px; }
+#viewDownload .job-title { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
 /* ------------------------------------------------------------ 新增：账号池 / 弹窗 */
 
 select {
