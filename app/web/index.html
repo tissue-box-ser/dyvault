@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e1015">
+<title>DyVault · 抖音批量下载</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fe2c55'/%3E%3Cpath d='M25 19v26l19-13z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css?v=2.1.0">
+</head>
+<body>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3.5v11m0 0 4-4m-4 4-4-4M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.2l1.8 2.2h8a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6.5 3.5h7l4.5 4.5v12.5h-11.5z"/><path d="M13.5 3.5V8h4.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2M12 18.5v2M4.6 7.8l1.7 1M17.7 15.2l1.7 1M4.6 16.2l1.7-1M17.7 8.8l1.7-1"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4.5V10h-5.2"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V6m0 0 5.5 5.5M12 6 6.5 11.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5.5v13M15 5.5v13"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><path d="M6.5 6.5h11v11h-11z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l.8 12.2h9.4L17.5 7"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4.5V10h5.2"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="6" rx="2"/><rect x="3.5" y="13.5" width="17" height="6" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="10" rx="2"/><path d="M2.5 18.5h19"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.5"/><path d="M10.6 10.6 20 20m-3-3 2-2m-4 0 2-2"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-zip" viewBox="0 0 24 24"><path d="M6.5 3.5h11v17h-11z"/><path d="M10 3.5v3M12 6.5v3M10 9.5v3M12 12.5v3"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M14 4.5H6.5v15H14"/><path d="M17 12H9.5m7.5 0-3-3m3 3-3 3"/></symbol>
+</defs></svg>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg class="ico"><use href="#i-play"/></svg></div>
+      <div class="brand-text">
+        <strong>DyVault</strong>
+        <span>Douyin Downloader</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-view="download">
+        <svg class="ico"><use href="#i-dl"/></svg><span>下载任务</span>
+      </button>
+      <button class="nav-item" data-view="files">
+        <svg class="ico"><use href="#i-folder"/></svg><span>文件库</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <svg class="ico"><use href="#i-gear"/></svg><span>设置</span>
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="disk-card">
+        <div class="disk-head"><span>服务器存储</span><b id="diskPct">--</b></div>
+        <div class="disk-bar"><i id="diskFill" style="width:0"></i></div>
+        <div class="disk-text" id="diskText">读取中…</div>
+        <div class="disk-host" id="diskHost">—</div>
+      </div>
+      <div class="side-ver">v<span id="verText">2.0.0</span> · <span id="sideCookie">0 个账号</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title">
+        <h1 id="pageTitle">下载任务</h1>
+        <p id="pageSub">粘贴博主主页，抓取作品 / 点赞 / 收藏与评论</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="chip state" id="connState"><i></i><b id="connText">连接中</b></span>
+        <button class="icon-btn" id="btnRefresh" title="刷新数据"><svg class="ico"><use href="#i-refresh"/></svg></button>
+      </div>
+    </header>
+
+    <!-- ============ 下载任务 ============ -->
+    <div class="content" id="viewDownload">
+      <div class="col">
+        <section class="hero">
+          <div class="hero-head">
+            <div>
+              <h2>新建下载任务</h2>
+              <p>支持主页链接、分享链接或 sec_uid，粘贴后自动识别博主</p>
+            </div>
+            <span class="hero-badge" id="heroBadge">服务器本地保存</span>
+          </div>
+
+          <div class="composer">
+            <div class="input-wrap">
+              <svg class="ico"><use href="#i-dl"/></svg>
+              <input id="target" type="text" autocomplete="off" spellcheck="false"
+                     placeholder="https://www.douyin.com/user/MS4wLjABAAAA…">
+            </div>
+            <button class="btn primary lg" id="btnCreate">开始下载</button>
+          </div>
+          <div class="preview" id="preview"></div>
+
+          <div class="hero-row">
+            <div class="seg" id="sourceSeg">
+              <button class="seg-item active" data-source="post">博主作品</button>
+              <button class="seg-item" data-source="like">博主点赞</button>
+              <button class="seg-item" data-source="collect">我的收藏</button>
+            </div>
+            <label class="mini-field"><span>最多抓取</span>
+              <input id="limit" type="number" min="0" placeholder="不限">
+            </label>
+            <label class="mini-field"><span>评论上限 / 条</span>
+              <input id="maxComments" type="number" min="0" value="200">
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label class="field-col">
+              <span>保存到</span>
+              <select id="storage">
+                <option value="server">服务器本地磁盘</option>
+                <option value="browser">我的电脑（浏览器）</option>
+              </select>
+            </label>
+            <label class="field-col">
+              <span>目录结构</span>
+              <select id="dirLayout">
+                <option value="collection">博主作品合集（按类型归档）</option>
+                <option value="per_aweme">单作品目录（每作品一个文件夹）</option>
+              </select>
+            </label>
+          </div>
+          <div class="target-hint" id="targetHint"></div>
+
+          <div class="chips" id="optChips">
+            <label class="chip-toggle"><input type="checkbox" id="optVideo" checked><span>无水印视频</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optImages" checked><span>图集原图</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optCover"><span>作品封面</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optMusic"><span>背景音乐</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optComments" checked><span>评论数据</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optReplies"><span>二级回复</span></label>
+            <label class="chip-toggle"><input type="checkbox" id="optRaw"><span>原始 JSON</span></label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>任务队列<span class="count" id="jobCount">0</span></h2>
+            <div class="filters" id="jobFilter">
+              <button class="filter active" data-filter="all">全部</button>
+              <button class="filter" data-filter="active">进行中</button>
+              <button class="filter" data-filter="done">已完成</button>
+            </div>
+          </div>
+          <div id="jobs" class="jobs"></div>
+          <div class="empty" id="jobsEmpty">
+            <div class="empty-icon"><svg class="ico"><use href="#i-folder"/></svg></div>
+            <p>还没有任务</p>
+            <span>在上面粘贴一个博主主页链接即可开始</span>
+          </div>
+        </section>
+      </div>
+
+      <aside class="col side">
+        <section class="panel">
+          <div class="panel-head"><h2>概况</h2></div>
+          <div class="stat-row">
+            <div class="stat"><b id="statJobs">0</b><span>任务</span></div>
+            <div class="stat"><b id="statAwemes">0</b><span>作品</span></div>
+            <div class="stat"><b id="statBytes">0</b><span>占用</span></div>
+          </div>
+          <div class="path-box">
+            <span><svg class="ico"><use href="#i-server"/></svg>服务器下载目录</span>
+            <code id="dlRoot">读取中…</code>
+          </div>
+          <div class="path-box">
+            <span><svg class="ico"><use href="#i-db"/></svg>Cookie 账号池</span>
+            <code id="cookieSummary">读取中…</code>
+          </div>
+        </section>
+
+        <section class="panel log-panel">
+          <div class="panel-head">
+            <h2>运行日志</h2>
+            <button class="link" id="btnClearLog">清空</button>
+          </div>
+          <div class="logs" id="logs"></div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ============ 文件库 ============ -->
+    <div class="content hidden" id="viewFiles">
+      <div class="col">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>文件库</h2>
+            <div class="head-actions">
+              <button class="btn ghost sm" id="btnUp"><svg class="ico"><use href="#i-up"/></svg>上一级</button>
+              <button class="btn ghost sm" id="btnReloadFiles"><svg class="ico"><use href="#i-refresh"/></svg>刷新</button>
+            </div>
+          </div>
+          <div class="root-tabs" id="rootTabs">
+            <button class="root-tab active" data-base="collection">
+              <svg class="ico"><use href="#i-folder"/></svg>合集目录<code id="tabPathCol">—</code>
+            </button>
+            <button class="root-tab" data-base="per_aweme">
+              <svg class="ico"><use href="#i-folder"/></svg>单作品目录<code id="tabPathPer">—</code>
+            </button>
+          </div>
+          <div class="crumbs" id="crumbs"></div>
+          <div class="files" id="files"></div>
+        </section>
+      </div>
+      <aside class="col side">
+        <section class="panel">
+          <div class="panel-head"><h2>存储位置</h2></div>
+          <p class="hint">所有成品都保存在服务器本地磁盘，可通过飞牛文件管理器、SMB 共享或下面的路径直接取用。</p>
+          <div class="path-box"><span>当前根目录</span><code id="filesRoot">读取中…</code></div>
+          <div class="path-box"><span>当前目录</span><code id="filesCur">/</code></div>
+          <div class="path-box"><span>磁盘可用</span><code id="filesFree">—</code></div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ============ 设置 ============ -->
+    <div class="content hidden" id="viewSettings">
+      <div class="col">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Cookie 账号池</h2>
+            <span class="hint-inline" id="cookieCount">0 个账号</span>
+          </div>
+          <p class="hint">添加多个抖音账号后，抓取时会按请求轮换使用（默认每 25 次请求换一个），单个账号触发风控时自动切到下一个。建议用小号。</p>
+          <div id="cookieList" class="cookie-list"></div>
+
+          <div class="add-box">
+            <div class="add-head"><svg class="ico"><use href="#i-plus"/></svg>添加账号</div>
+            <div class="add-grid">
+              <label class="field-col"><span>备注名</span>
+                <input id="newCookieLabel" type="text" placeholder="例如：小号 A">
+              </label>
+              <label class="field-col grow"><span>Cookie <em>必填</em></span>
+                <textarea id="newCookieValue" rows="3" spellcheck="false"
+                          placeholder="浏览器登录 douyin.com → F12 → Network → 复制请求头里的整串 Cookie"></textarea>
+              </label>
+            </div>
+            <div class="row">
+              <button class="btn primary sm" id="btnAddCookie"><svg class="ico"><use href="#i-plus"/></svg>添加账号</button>
+              <span class="test-result" id="addCookieHint"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>抓取节奏</h2></div>
+          <div class="grid3">
+            <label class="field-col"><span>请求间隔（秒）</span>
+              <input id="setInterval" type="number" step="0.1" min="0.3"></label>
+            <label class="field-col"><span>随机抖动（秒）</span>
+              <input id="setJitter" type="number" step="0.1" min="0"></label>
+            <label class="field-col"><span>单作品并发下载</span>
+              <input id="setWorkers" type="number" min="1" max="16"></label>
+            <label class="field-col"><span>同时运行任务数</span>
+              <input id="setMaxJobs" type="number" min="1" max="5"></label>
+            <label class="field-col"><span>代理（可选）</span>
+              <input id="setProxy" type="text" placeholder="http://127.0.0.1:7890"></label>
+          </div>
+          <p class="tip">请求间隔建议 1.2 秒以上；账号越多、间隔越稳，越不容易触发风控。</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>下载路径</h2><span class="hint-inline">两种目录结构各用一条路径</span></div>
+          <p class="hint">都填写服务器本机绝对路径；留空时分别落在程序目录同级的 <code>downloads/</code> 与 <code>downloads_per_aweme/</code>。新建任务时选哪种结构，就走对应的路径。</p>
+
+          <div class="root-block">
+            <div class="root-head">
+              <b>博主作品合集</b>
+              <span class="tag">video / image / cover / music 分类归档</span>
+            </div>
+            <label class="field-col">
+              <span>合集下载路径</span>
+              <input id="setRoot" type="text" placeholder="/vol1/1000/programs/douyin-dl/downloads">
+            </label>
+            <div class="disk-inline">
+              <div class="disk-inline-head"><span id="diskInlinePath">—</span><b id="diskInlineText">—</b></div>
+              <div class="disk-bar"><i id="diskInlineFill" style="width:0"></i></div>
+            </div>
+          </div>
+
+          <div class="root-block">
+            <div class="root-head">
+              <b>单作品目录</b>
+              <span class="tag">works/日期_ID_描述/</span>
+            </div>
+            <label class="field-col">
+              <span>单作品下载路径</span>
+              <input id="setRootPer" type="text" placeholder="/vol1/1000/programs/douyin-dl/downloads_per_aweme">
+            </label>
+            <div class="disk-inline">
+              <div class="disk-inline-head"><span id="diskPerPath">—</span><b id="diskPerText">—</b></div>
+              <div class="disk-bar"><i id="diskPerFill" style="width:0"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>访问安全</h2></div>
+          <div class="grid3">
+            <label class="field-col"><span>原密码</span>
+              <input id="oldPass" type="password" autocomplete="current-password" placeholder="修改密码时填写"></label>
+            <label class="field-col"><span>新密码</span>
+              <input id="newPass" type="password" autocomplete="new-password" placeholder="至少 6 位"></label>
+            <label class="field-col"><span>确认新密码</span>
+              <input id="newPass2" type="password" autocomplete="new-password" placeholder="再输入一次"></label>
+          </div>
+          <div class="row">
+            <button class="btn sm" id="btnChangePass"><svg class="ico"><use href="#i-key"/></svg>修改密码</button>
+            <button class="btn sm ghost" id="btnLogout"><svg class="ico"><use href="#i-out"/></svg>退出登录</button>
+            <span class="test-result" id="passHint"></span>
+          </div>
+          <label class="field-col" style="margin-top:14px">
+            <span>API 访问令牌（可选）</span>
+            <input id="setToken" type="text" placeholder="填写后调用 API 需带 X-Token，可跳过登录页">
+            <small>脚本调用接口时用；浏览器正常使用不需要设置。</small>
+          </label>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>保存设置</h2></div>
+          <div class="row">
+            <button class="btn primary" id="btnSaveSettings">保存配置</button>
+            <span class="test-result" id="saveHint"></span>
+          </div>
+        </section>
+      </div>
+
+      <aside class="col side">
+        <section class="panel">
+          <div class="panel-head"><h2>账号池状态</h2></div>
+          <div class="stat-row">
+            <div class="stat"><b id="statCookieOk">0</b><span>正常</span></div>
+            <div class="stat"><b id="statCookieBad">0</b><span>异常</span></div>
+            <div class="stat"><b id="statCookieTotal">0</b><span>总数</span></div>
+          </div>
+          <div class="path-box">
+            <span><svg class="ico"><use href="#i-db"/></svg>轮询策略</span>
+            <code>按最久未使用优先取用；每 25 次请求切换一次账号；单账号失效自动跳过</code>
+          </div>
+          <div class="path-box">
+            <span><svg class="ico"><use href="#i-server"/></svg>当前下载目录</span>
+            <code id="setRootResolved">—</code>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>关于</h2></div>
+          <p class="hint">DyVault 把抖音博主的作品、点赞、收藏与评论归档到自己的服务器或本机，支持多账号轮询与密码保护。</p>
+          <div class="path-box"><span>版本</span><code id="aboutVersion">2.0.0</code></div>
+          <div class="path-box"><span>运行环境</span><code id="aboutPlatform">—</code></div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- ============ 下载到本机弹窗 ============ -->
+<div class="modal-mask" id="dlMask">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>下载到本机</h2>
+        <p id="dlSub">正在读取文件清单…</p>
+      </div>
+      <button class="icon-btn" id="dlClose" title="关闭"><svg class="ico"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="dl-summary" id="dlSummary"></div>
+      <div class="dl-progress hidden" id="dlProgress">
+        <div class="bar"><i id="dlBar" style="width:0"></i></div>
+        <div class="dl-state" id="dlState">准备中…</div>
+      </div>
+      <p class="tip" id="dlTip">“打包下载”会由服务器实时打包成一个 ZIP；“逐个下载”会让浏览器依次保存每个文件。</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="dlOne">逐个下载</button>
+      <button class="btn primary" id="dlZip"><svg class="ico"><use href="#i-zip"/></svg>打包下载 ZIP</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/static/app.js?v=2.1.0"></script>
+</body>
+</html>

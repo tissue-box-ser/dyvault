@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+data/
+downloads/
+config/
+dist/
+.tmp/
+.fpk_build/
+*.fpk
+*.db
+*.db-wal
+*.db-shm
+downloads_per_aweme/
+.workbuddy/

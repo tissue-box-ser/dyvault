@@ -1,0 +1,10 @@
+# 统一换行：源码一律 LF，避免在 Linux / NAS 上执行失败
+* text=auto eol=lf
+
+*.sh        text eol=lf
+fpk/cmd/main text eol=lf
+Dockerfile  text eol=lf
+
+*.png binary
+*.jpg binary
+*.fpk binary

@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+data/
+downloads/
+config/
+dist/
+build/
+.fpk_build/
+.git/
+*.fpk
+*.db
+*.db-wal
+*.db-shm
