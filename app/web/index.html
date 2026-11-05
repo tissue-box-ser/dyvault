@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e1015">
 <title>DyVault · 抖音批量下载</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fe2c55'/%3E%3Cpath d='M25 19v26l19-13z' fill='%23fff'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="/static/style.css?v=2.1.0">
+<link rel="stylesheet" href="/static/style.css?v=2.1.1">
 </head>
 <body>
 <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -89,6 +89,24 @@
             <span class="hero-badge" id="heroBadge">服务器本地保存</span>
           </div>
 
+          <div class="field-row">
+            <label class="field-col">
+              <span>保存到</span>
+              <select id="storage">
+                <option value="server">服务器本地磁盘</option>
+                <option value="browser">我的电脑（浏览器）</option>
+              </select>
+            </label>
+            <label class="field-col">
+              <span>下载方式</span>
+              <select id="dirLayout">
+                <option value="per_aweme">单作品目录（每作品一个文件夹）</option>
+                <option value="collection">博主作品合集（按类型归档）</option>
+              </select>
+            </label>
+          </div>
+          <div class="target-hint" id="targetHint"></div>
+
           <div class="composer">
             <div class="input-wrap">
               <svg class="ico"><use href="#i-dl"/></svg>
@@ -112,24 +130,6 @@
               <input id="maxComments" type="number" min="0" value="200">
             </label>
           </div>
-
-          <div class="field-row">
-            <label class="field-col">
-              <span>保存到</span>
-              <select id="storage">
-                <option value="server">服务器本地磁盘</option>
-                <option value="browser">我的电脑（浏览器）</option>
-              </select>
-            </label>
-            <label class="field-col">
-              <span>目录结构</span>
-              <select id="dirLayout">
-                <option value="collection">博主作品合集（按类型归档）</option>
-                <option value="per_aweme">单作品目录（每作品一个文件夹）</option>
-              </select>
-            </label>
-          </div>
-          <div class="target-hint" id="targetHint"></div>
 
           <div class="chips" id="optChips">
             <label class="chip-toggle"><input type="checkbox" id="optVideo" checked><span>无水印视频</span></label>
@@ -389,6 +389,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="/static/app.js?v=2.1.0"></script>
+<script src="/static/app.js?v=2.1.1"></script>
 </body>
 </html>
