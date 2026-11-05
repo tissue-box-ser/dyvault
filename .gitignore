@@ -13,3 +13,5 @@ dist/
 *.db-shm
 downloads_per_aweme/
 .workbuddy/
+
+/开发思路.md
